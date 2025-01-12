@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Ignore GCP key files
+src/main/resources/gcp-key.json
