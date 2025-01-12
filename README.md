@@ -55,7 +55,7 @@
 
 ---
 
-### 🔊 3. 벌금 알림 음성 파일 생성
+### 🔊 벌금 알림 음성 파일 생성
 - **HTTP Method**: `POST`  
 - **URL**: `/api/tts/notify`  
 - **Request Parameters**:  
