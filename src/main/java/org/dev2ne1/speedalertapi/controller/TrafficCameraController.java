@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/traffic")
+@RequestMapping("/api/speed")
 public class TrafficCameraController {
 
     private final TrafficCameraService trafficCameraService;
 
-    @GetMapping("/cameras")
+    @GetMapping("/check")
     public ResponseEntity<String> getTrafficCameras() {
         try {
             String cameraData = trafficCameraService.getTrafficCameraData();

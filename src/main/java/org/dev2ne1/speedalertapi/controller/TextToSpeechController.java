@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class TextToSpeechController {
 
     private final TextToSpeechService textToSpeechService;
-    @PostMapping("/synthesize")
+    @PostMapping("/notify")
     public ResponseEntity<byte[]> synthesizeTextToSpeech(@RequestBody String text) {
 
         try {
