@@ -1,17 +1,22 @@
 package org.dev2ne1.speedalertapi.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class TrafficCameraService {
@@ -22,46 +27,29 @@ public class TrafficCameraService {
     private String apiKey;
 
     public String getTrafficCameraData(String latitude, String longitude) throws IOException {
-        StringBuilder urlBuilder = new StringBuilder("http://api.data.go.kr/openapi/tn_pubr_public_unmanned_traffic_camera_api");
-        urlBuilder.append("?serviceKey=" + URLEncoder.encode(apiKey, "UTF-8"));
-        urlBuilder.append("&pageNo=" + URLEncoder.encode("1", "UTF-8"));
-        urlBuilder.append("&numOfRows=" + URLEncoder.encode("100", "UTF-8"));
-        urlBuilder.append("&type=" + URLEncoder.encode("xml", "UTF-8"));
 
-        // 필요한 추가 파라미터들
-//        urlBuilder.append("&mnlssRegltCameraManageNo=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&ctprvnNm=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&signguNm=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&roadKnd=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&roadRouteNo=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&roadRouteNm=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&roadRouteDrc=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&rdnmadr=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&lnmadr=" + URLEncoder.encode("", "UTF-8"));
-        urlBuilder.append("&latitude=" + URLEncoder.encode("36.02879792", "UTF-8"));  /*위도*/
-        urlBuilder.append("&longitude=" + URLEncoder.encode("128.5295922", "UTF-8"));  /*경도*/
-//        urlBuilder.append("&itlpc=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&regltSe=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&lmttVe=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&regltSctnLcSe=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&ovrspdRegltSctnLt=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&prtcareaType=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&installationYear=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&institutionNm=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&phoneNumber=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&referenceDate=" + URLEncoder.encode("", "UTF-8"));
-//        urlBuilder.append("&instt_code=" + URLEncoder.encode("", "UTF-8"));
+        // API Key 인코딩
+        String encodedApiKey = URLEncoder.encode(apiKey, StandardCharsets.UTF_8.toString());
 
-        String url = urlBuilder.toString();
-        System.out.println("url : "+url);
-        URI uri = null; // URI 객체로 변환
-        try {
-            uri = new URI(url);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println("uri : "+uri);
-        // getForObject를 사용하여 응답을 가져옵니다.
-        return restTemplate.getForObject(uri, String.class);
+        // 기본 URL과 파라미터 설정
+        URI uri = UriComponentsBuilder.fromHttpUrl("http://api.data.go.kr/openapi/tn_pubr_public_unmanned_traffic_camera_api")
+                .queryParam("serviceKey", encodedApiKey)
+                .queryParam("pageNo", 1)
+                .queryParam("numOfRows", 100)
+                .queryParam("type", "xml")
+                .queryParam("latitude", latitude)
+                .queryParam("longitude", longitude)
+                .build(true)
+                .toUri();
+
+            log.info("Request URI: {}", uri);
+            try {
+                // 요청 실행 및 결과 반환
+                return restTemplate.getForObject(uri, String.class);
+            } catch (Exception e) {
+                // 예외 처리
+                System.err.println("Error while fetching traffic camera data: " + e.getMessage());
+                throw new RuntimeException("Failed to fetch traffic camera data", e);
+            }
     }
 }
