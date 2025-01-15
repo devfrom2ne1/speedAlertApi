@@ -28,17 +28,18 @@ public class TrafficCameraService {
 
     public String getTrafficCameraData(String latitude, String longitude) throws IOException {
 
-        // API Key 인코딩
+        // API Key 인코딩(Decoding -> Encoding)
+        // 만약 이미 인코딩된 키가 있다면 이 과정은 필요 없음
         String encodedApiKey = URLEncoder.encode(apiKey, StandardCharsets.UTF_8.toString());
 
         // 기본 URL과 파라미터 설정
         URI uri = UriComponentsBuilder.fromHttpUrl("http://api.data.go.kr/openapi/tn_pubr_public_unmanned_traffic_camera_api")
-                .queryParam("serviceKey", encodedApiKey)
+                .queryParam("serviceKey", encodedApiKey) /* 인코딩된 키 */
                 .queryParam("pageNo", 1)
                 .queryParam("numOfRows", 100)
                 .queryParam("type", "xml")
-                .queryParam("latitude", latitude)
-                .queryParam("longitude", longitude)
+                .queryParam("latitude", latitude /* 위도 */)
+                .queryParam("longitude", longitude /* 경도 */)
                 .build(true)
                 .toUri();
 
